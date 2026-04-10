@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pattern Game</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial;
+  color: white;
+}
+
+#game {
+  display: grid;
+  grid-template-columns: repeat(2, 120px);
+  grid-gap: 10px;
+}
+
+.btn {
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+#b0 { background: red; }
+#b1 { background: blue; }
+#b2 { background: green; }
+#b3 { background: yellow; }
+
+.active {
+  opacity: 1;
+  box-shadow: 0 0 20px white;
+}
+
+#score {
+  position: absolute;
+  top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2 id="score">Level: 1</h2>
+
+<div id="game">
+  <div class="btn" id="b0"></div>
+  <div class="btn" id="b1"></div>
+  <div class="btn" id="b2"></div>
+  <div class="btn" id="b3"></div>
+</div>
+
+<script>
+let pattern = [];
+let player = [];
+let level = 1;
+let showing = false;
+
+const buttons = [
+  document.getElementById("b0"),
+  document.getElementById("b1"),
+  document.getElementById("b2"),
+  document.getElementById("b3")
+];
+
+const score = document.getElementById("score");
+
+function startGame() {
+  pattern = [];
+  level = 1;
+  nextRound();
+}
+
+function nextRound() {
+  player = [];
+  pattern.push(Math.floor(Math.random() * 4));
+  score.innerText = "Level: " + level;
+  showPattern();
+}
+
+async function showPattern() {
+  showing = true;
+  for (let i of pattern) {
+    await flash(buttons[i]);
+    await sleep(300);
+  }
+  showing = false;
+}
+
+function flash(btn) {
+  return new Promise(res => {
+    btn.classList.add("active");
+    setTimeout(() => {
+      btn.classList.remove("active");
+      res();
+    }, 400);
+  });
+}
+
+function sleep(ms) {
+  return new Promise(res => setTimeout(res, ms));
+}
+
+buttons.forEach((btn, i) => {
+  btn.onclick = () => {
+    if (showing) return;
+
+    player.push(i);
+
+    if (player[player.length - 1] !== pattern[player.length - 1]) {
+      alert("Game Over! Level: " + level);
+      startGame();
+      return;
+    }
+
+    if (player.length === pattern.length) {
+      level++;
+      setTimeout(nextRound, 500);
+    }
+  };
+});
+
+startGame();
+</script>
+
+</body>
+</html>
