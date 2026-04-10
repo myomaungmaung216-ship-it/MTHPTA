@@ -3,104 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pattern Memory App</title>
+    <title>Pattern Memory Game</title>
     <style>
-        /* CSS ကို ဒီမှာ တစ်ခါတည်း ထည့်ထားပေးပါတယ် */
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-            background-color: #000;
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; background-color: #000; color: white;
         }
 
         /* Video Background */
         #bg-video {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -2;
-            object-fit: cover;
+            position: fixed; right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -2; object-fit: cover;
         }
 
-        /* Video ပေါ်မှာ အမည်းရောင် အုပ်ထားရန် (Overlay) */
         .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* အမည်းရောင် ပိုမှောင်ချင်ရင် 0.7 ကို တိုးပါ */
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); z-index: -1;
         }
 
-        /* Game UI Content */
         .game-container {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            color: white;
-            text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; height: 100vh; text-align: center;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
+        /* Game Grid - ဂိမ်းကွက်များ */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 70px);
+            grid-gap: 10px;
+            margin: 20px 0;
         }
+
+        .cell {
+            width: 70px; height: 70px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px; cursor: pointer;
+        }
+
+        .cell.active { background-color: #f1c40f; } /* မီးလင်းတဲ့အရောင် */
 
         .start-btn {
-            background-color: #f1c40f;
-            color: black;
-            border: none;
-            padding: 15px 50px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .start-btn:hover {
-            transform: scale(1.1);
-            background-color: #d4ac0d;
+            background-color: #f1c40f; color: black; border: none;
+            padding: 12px 40px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 8px; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <!-- Video Background -->
+    <!-- Video လမ်းကြောင်းကို သေချာအောင် ပြန်စစ်ပါ (ဥပမာ: game.mp4) -->
     <video autoplay muted loop id="bg-video">
         <source src="your-video.mp4" type="video/mp4">
-        Your browser does not support HTML5 video.
     </video>
 
-    <!-- Black Overlay Layer -->
     <div class="overlay"></div>
 
-    <!-- Main Game UI -->
     <div class="game-container">
-        <img src="https://cdn-icons-png.flaticon.com/512/3665/3665910.png" alt="Brain" width="100">
-        <h1>Pattern Memory</h1>
-        <p>Remember the sequence of 7 cells</p>
-        <br>
-        <button class="start-btn" onclick="startGame()">START</button>
+        <div id="status">Pattern Memory</div>
+        
+        <div class="grid" id="grid">
+            <!-- အကွက် ၁၆ ကွက်ကို JS နဲ့ ထည့်ပါမယ် -->
+        </div>
+
+        <button class="start-btn" onclick="startGame()" id="start-btn">START</button>
     </div>
 
     <script>
+        const grid = document.getElementById('grid');
+        const statusText = document.getElementById('status');
+        let sequence = [];
+        let userSequence = [];
+        
+        // အကွက် ၁၆ ကွက် ဖန်တီးခြင်း
+        for (let i = 0; i < 16; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.setAttribute('data-id', i);
+            cell.addEventListener('click', () => handleCellClick(i));
+            grid.appendChild(cell);
+        }
+
         function startGame() {
-            alert("ဂိမ်းစတင်ပါပြီ!");
-            // သင်ရေးထားတဲ့ game logic code တွေကို ဒီအောက်မှာ ထပ်ထည့်နိုင်ပါတယ်
+            sequence = [];
+            userSequence = [];
+            statusText.innerText = "Watch carefully...";
+            nextLevel();
+        }
+
+        function nextLevel() {
+            // Random အကွက်တစ်ခု ရွေးခြင်း
+            const randomIdx = Math.floor(Math.random() * 16);
+            sequence.push(randomIdx);
+            showPattern();
+        }
+
+        function showPattern() {
+            let i = 0;
+            const interval = setInterval(() => {
+                const cells = document.querySelectorAll('.cell');
+                cells[sequence[i]].classList.add('active');
+                
+                setTimeout(() => {
+                    cells[sequence[i-1]].classList.remove('active');
+                }, 500);
+
+                i++;
+                if (i >= sequence.length) {
+                    clearInterval(interval);
+                    statusText.innerText = "Your turn!";
+                }
+            }, 800);
+        }
+
+        function handleCellClick(id) {
+            // ဂိမ်း Logic အကျဉ်းချုပ်
+            const cells = document.querySelectorAll('.cell');
+            cells[id].classList.add('active');
+            setTimeout(() => cells[id].classList.remove('active'), 300);
+            // ဒီမှာ userSequence နှိုင်းယှဉ်ချက်တွေ ထပ်ထည့်ရပါမယ်
         }
     </script>
-
 </body>
 </html>
