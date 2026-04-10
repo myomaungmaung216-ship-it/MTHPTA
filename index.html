@@ -1,135 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="my">
 <head>
-<meta charset="UTF-8">
-<title>Pattern Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Memory App</title>
+    <style>
+        /* CSS ကို ဒီမှာ တစ်ခါတည်း ထည့်ထားပေးပါတယ် */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #000;
+        }
 
-<style>
-body {
-  margin: 0;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-family: Arial;
-  color: white;
-}
+        /* Video Background */
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -2;
+            object-fit: cover;
+        }
 
-#game {
-  display: grid;
-  grid-template-columns: repeat(2, 120px);
-  grid-gap: 10px;
-}
+        /* Video ပေါ်မှာ အမည်းရောင် အုပ်ထားရန် (Overlay) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* အမည်းရောင် ပိုမှောင်ချင်ရင် 0.7 ကို တိုးပါ */
+            z-index: -1;
+        }
 
-.btn {
-  width: 120px;
-  height: 120px;
-  border-radius: 10px;
-  opacity: 0.7;
-  cursor: pointer;
-}
+        /* Game UI Content */
+        .game-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            text-align: center;
+        }
 
-#b0 { background: red; }
-#b1 { background: blue; }
-#b2 { background: green; }
-#b3 { background: yellow; }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
 
-.active {
-  opacity: 1;
-  box-shadow: 0 0 20px white;
-}
+        .start-btn {
+            background-color: #f1c40f;
+            color: black;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
 
-#score {
-  position: absolute;
-  top: 20px;
-}
-</style>
+        .start-btn:hover {
+            transform: scale(1.1);
+            background-color: #d4ac0d;
+        }
+    </style>
 </head>
-
 <body>
 
-<h2 id="score">Level: 1</h2>
+    <!-- Video Background -->
+    <video autoplay muted loop id="bg-video">
+        <source src="your-video.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
 
-<div id="game">
-  <div class="btn" id="b0"></div>
-  <div class="btn" id="b1"></div>
-  <div class="btn" id="b2"></div>
-  <div class="btn" id="b3"></div>
-</div>
+    <!-- Black Overlay Layer -->
+    <div class="overlay"></div>
 
-<script>
-let pattern = [];
-let player = [];
-let level = 1;
-let showing = false;
+    <!-- Main Game UI -->
+    <div class="game-container">
+        <img src="https://cdn-icons-png.flaticon.com/512/3665/3665910.png" alt="Brain" width="100">
+        <h1>Pattern Memory</h1>
+        <p>Remember the sequence of 7 cells</p>
+        <br>
+        <button class="start-btn" onclick="startGame()">START</button>
+    </div>
 
-const buttons = [
-  document.getElementById("b0"),
-  document.getElementById("b1"),
-  document.getElementById("b2"),
-  document.getElementById("b3")
-];
-
-const score = document.getElementById("score");
-
-function startGame() {
-  pattern = [];
-  level = 1;
-  nextRound();
-}
-
-function nextRound() {
-  player = [];
-  pattern.push(Math.floor(Math.random() * 4));
-  score.innerText = "Level: " + level;
-  showPattern();
-}
-
-async function showPattern() {
-  showing = true;
-  for (let i of pattern) {
-    await flash(buttons[i]);
-    await sleep(300);
-  }
-  showing = false;
-}
-
-function flash(btn) {
-  return new Promise(res => {
-    btn.classList.add("active");
-    setTimeout(() => {
-      btn.classList.remove("active");
-      res();
-    }, 400);
-  });
-}
-
-function sleep(ms) {
-  return new Promise(res => setTimeout(res, ms));
-}
-
-buttons.forEach((btn, i) => {
-  btn.onclick = () => {
-    if (showing) return;
-
-    player.push(i);
-
-    if (player[player.length - 1] !== pattern[player.length - 1]) {
-      alert("Game Over! Level: " + level);
-      startGame();
-      return;
-    }
-
-    if (player.length === pattern.length) {
-      level++;
-      setTimeout(nextRound, 500);
-    }
-  };
-});
-
-startGame();
-</script>
+    <script>
+        function startGame() {
+            alert("ဂိမ်းစတင်ပါပြီ!");
+            // သင်ရေးထားတဲ့ game logic code တွေကို ဒီအောက်မှာ ထပ်ထည့်နိုင်ပါတယ်
+        }
+    </script>
 
 </body>
 </html>
